@@ -15,9 +15,16 @@ void Renderer::PreRender()
 
 void Renderer::Render()
 {
+	Sphere& sphere = scenemgr.objmgr.sphere;
+
 	if (SHOULD_LOAD_SPHERE)
 	{
 		RenderSphere();
+	}
+
+	if (SHOULD_LOAD_THREE_BODY)
+	{
+		RenderThreeBody();
 	}
 }
 
@@ -46,9 +53,6 @@ void Renderer::ToggleWireFrame()
 
 void Renderer::RenderSphere()
 {
-	Sphere& sphere = scenemgr.objmgr.sphere;
-	Camera& camera = scenemgr.ctrlmgr.camera;
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, sphere.texture1);
 
@@ -62,10 +66,41 @@ void Renderer::RenderSphere()
 
 	glBindVertexArray(sphere.sphereVAO);
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, sphere.SpherePositions[0]);
+	model = glm::translate(model, sphere.position);
 	sphere.shader.setMat4("model", model);
 
 	glDrawElements(GL_TRIANGLE_STRIP, sphere.indexCount, GL_UNSIGNED_INT, 0);
+}
 
+void Renderer::RenderThreeBody()
+{
+	float xPos = -10.0f;
 
+	for (auto& body : ThreeBody)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, body.texture1);
+
+		body.shader.use();
+
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)window.Get_AspectRatio(), 0.1f, 500.0f);
+		body.shader.setMat4("projection", projection);
+
+		glm::mat4 view = camera.GetViewMatrix();
+		body.shader.setMat4("view", view);
+
+		glBindVertexArray(body.sphereVAO);
+		glm::mat4 model = glm::mat4(1.0f);
+
+		// Update the x-coordinate of the model matrix
+		body.position.x = xPos;
+		model = glm::translate(model, glm::vec3(body.position));
+
+		body.shader.setMat4("model", model);
+
+		// Increment x-coordinate for next iteration
+		xPos += 10.0f;
+
+		glDrawElements(GL_TRIANGLE_STRIP, body.indexCount, GL_UNSIGNED_INT, 0);
+	}
 }

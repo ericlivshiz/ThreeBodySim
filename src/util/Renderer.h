@@ -30,4 +30,9 @@ private:
 private:
 	Window& window;
 	bool frame_state = 0; // 0 -> WireFrameOff. 1 -> WireFrameOn
+
+	Camera& camera = scenemgr.ctrlmgr.camera;
+	Sphere& sphere = scenemgr.objmgr.sphere;
+	std::vector<Sphere>& ThreeBody = scenemgr.objmgr.ThreeBody;
+
 };

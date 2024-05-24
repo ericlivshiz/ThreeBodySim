@@ -11,8 +11,8 @@
 class Sphere
 {
 public:
-	void Setup()
-	{
+    void Setup()
+    {
         if (sphereVAO == 0)
         {
             glGenVertexArrays(1, &sphereVAO);
@@ -100,7 +100,16 @@ public:
             glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 
         }
-        
+
+        glGenTextures(1, &texture1);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
         // load image, create texture and generate mipmaps
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
@@ -118,25 +127,17 @@ public:
 
         shader.use();
         shader.setInt("texture1", 0);
-	}
-
-	void SetupThreeBody()
-	{
-
-	}
-
+    }
 public:
-	Physics physics;
+    Physics physics;
 
-	Shader shader{ "src/shaders/GLSL/camera.vs", "src/shaders/GLSL/camera.fs" };
+    Shader shader{ "src/shaders/GLSL/camera.vs", "src/shaders/GLSL/camera.fs" };
     unsigned int sphereVAO = 0;
     unsigned int indexCount;
 
     unsigned int texture1;
     unsigned int texture2;
 
-    std::vector<glm::vec3> SpherePositions
-    {
-        glm::vec3(0.0f, 0.0f, 0.0f)
-    };
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+
 };

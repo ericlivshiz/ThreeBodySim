@@ -25,7 +25,7 @@ void Application::Setup()
 
 	glfwSetCursorPosCallback(window.Get_Window(), mouse_callback);
 	glfwSetScrollCallback(window.Get_Window(), scroll_callback);
-	glfwSetInputMode(window.Get_Window(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(window.Get_Window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
 	AppLoop();

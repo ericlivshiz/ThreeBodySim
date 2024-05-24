@@ -2,21 +2,29 @@
 
 #include "Sphere.h"
 
-#define SHOULD_LOAD_SPHERE     1
-#define SHOULD_LOAD_THREE_BODY 0
+#define SHOULD_LOAD_SPHERE     0
+#define SHOULD_LOAD_THREE_BODY 1
 
 class ObjectMgr
 {
 public:
 	void SetupObjects()
 	{
-		if (SHOULD_LOAD_SPHERE)
-			sphere.Setup();
+		ThreeBody.push_back(sphere);
+		ThreeBody.push_back(sphere2);
+		ThreeBody.push_back(sphere3);
 
-		if (SHOULD_LOAD_THREE_BODY)
-			sphere.SetupThreeBody();
+		for (auto& body : ThreeBody)
+		{
+			body.Setup();
+		}
 	}
 
 public:
+
+	std::vector<Sphere> ThreeBody;
+
 	Sphere sphere;
+	Sphere sphere2;
+	Sphere sphere3;
 };
