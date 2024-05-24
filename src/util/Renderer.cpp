@@ -4,25 +4,21 @@ Renderer::Renderer(Window& window)
 	:
 	window{ window }
 {
-	frame_state = 0;
+
 }
 
 void Renderer::PreRender()
 {
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::Render(ObjMgr& objmgr)
+void Renderer::Render()
 {
-	if (SHOULD_LOAD_SQUARE)
-		RenderSquare(objmgr);
-
-	if (SHOULD_LOAD_CUBE)
-		RenderCube(objmgr);
-
 	if (SHOULD_LOAD_SPHERE)
-		RenderSphere(objmgr);
+	{
+		RenderSphere();
+	}
 }
 
 void Renderer::PostRender()
@@ -31,7 +27,7 @@ void Renderer::PostRender()
 	glfwPollEvents();
 }
 
-void Renderer::ToggleWireframe()
+void Renderer::ToggleWireFrame()
 {
 	// if wireframes off on call, turn on. vice versa.
 
@@ -48,69 +44,28 @@ void Renderer::ToggleWireframe()
 	}
 }
 
-void Renderer::RenderSquare(ObjMgr& objmgr)
+void Renderer::RenderSphere()
 {
+	Sphere& sphere = scenemgr.objmgr.sphere;
+	Camera& camera = scenemgr.ctrlmgr.camera;
+
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, objmgr.square.texture1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, objmgr.square.texture2);
+	glBindTexture(GL_TEXTURE_2D, sphere.texture1);
 
-	objmgr.square.squareShader.use();
+	sphere.shader.use();
 
-	glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-	projection = glm::perspective(glm::radians(45.0f), (float)window.Get_AspectRatio(), 0.1f, 100.0f);
-	// retrieve the matrix uniform locations
-	unsigned int modelLoc = glGetUniformLocation(objmgr.square.squareShader.ID, "model");
-	unsigned int viewLoc = glGetUniformLocation(objmgr.square.squareShader.ID, "view");
-	// pass them to the shaders (3 different ways)
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-	// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-	objmgr.square.squareShader.setMat4("projection", projection);
+	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)window.Get_AspectRatio(), 0.1f, 500.0f);
+	sphere.shader.setMat4("projection", projection);
 
-	// render container
-	glBindVertexArray(objmgr.square.VAO);
+	glm::mat4 view = camera.GetViewMatrix();
+	sphere.shader.setMat4("view", view);
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-}
+	glBindVertexArray(sphere.sphereVAO);
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, sphere.SpherePositions[0]);
+	sphere.shader.setMat4("model", model);
 
-void Renderer::RenderCube(ObjMgr& objmgr)
-{
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, objmgr.cube.texture1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, objmgr.cube.texture2);
+	glDrawElements(GL_TRIANGLE_STRIP, sphere.indexCount, GL_UNSIGNED_INT, 0);
 
-	// activate shader
-	objmgr.cube.cubeShader.use();
 
-	// create transformations
-	glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::mat4(1.0f);
-	model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-	projection = glm::perspective(glm::radians(45.0f), (float)window.Get_AspectRatio(), 0.1f, 100.0f);
-	// retrieve the matrix uniform locations
-	unsigned int modelLoc = glGetUniformLocation(objmgr.cube.cubeShader.ID, "model");
-	unsigned int viewLoc = glGetUniformLocation(objmgr.cube.cubeShader.ID, "view");
-	// pass them to the shaders (3 different ways)
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-	// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-	objmgr.cube.cubeShader.setMat4("projection", projection);
-
-	// render box
-	glBindVertexArray(objmgr.cube.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-
-}
-
-void Renderer::RenderSphere(ObjMgr& objmgr)
-{
-	objmgr.sphere.draw();
 }

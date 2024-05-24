@@ -4,9 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../objects/ObjMgr.h"
 #include "Window.h"
-
+#include "../SceneMgr.h"
+#include "../GUI.h"
 
 class Renderer
 {
@@ -14,21 +14,20 @@ public:
 	Renderer(Window& window);
 
 	void PreRender();
-	void Render(ObjMgr& objmgr);
+	void Render();
 	void PostRender();
 
-	void ToggleWireframe();
+	void ToggleWireFrame();
+
+public:
+	SceneMgr scenemgr;
 
 private:
-	void RenderSquare(ObjMgr& objmgr);
-	void RenderCube(ObjMgr& objmgr);
-	void RenderSphere(ObjMgr& objmgr);
+	void RenderSphere();
+	void RenderThreeBody();
 
-private:
-	bool frame_state; // 0 -> WireFrameOff. 1-> WireFramesOn.
 
 private:
 	Window& window;
-
-
+	bool frame_state = 0; // 0 -> WireFrameOff. 1 -> WireFrameOn
 };

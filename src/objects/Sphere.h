@@ -1,109 +1,142 @@
 #pragma once
 
-///////////////////////////////////////////////////////////////////////////////
-// Sphere.h
-// ========
-// Sphere for OpenGL with (radius, sectors, stacks)
-// The min number of sectors is 3 and the min number of stacks are 2.
-// The default up axis is +Z axis. You can change the up axis with setUpAxis():
-// X=1, Y=2, Z=3.
-//
-//  AUTHOR: Song Ho Ahn (song.ahn@gmail.com)
-// CREATED: 2017-11-01
-// UPDATED: 2023-03-11
-///////////////////////////////////////////////////////////////////////////////
+#include "../util/Physics.h"
 
-#ifndef GEOMETRY_SPHERE_H
-#define GEOMETRY_SPHERE_H
+#include "../shaders/Shader.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-#include <vector>
+#include "../../dependencies/stb_image.h"
 
 class Sphere
 {
 public:
-    // ctor/dtor
-    Sphere(float radius = 1.0f, int sectorCount = 36, int stackCount = 18, bool smooth = true, int up = 3);
-    ~Sphere() {}
+	void Setup()
+	{
+        if (sphereVAO == 0)
+        {
+            glGenVertexArrays(1, &sphereVAO);
 
-    // getters/setters
-    float getRadius() const { return radius; }
-    int getSectorCount() const { return sectorCount; }
-    int getStackCount() const { return stackCount; }
-    int getUpAxis() const { return upAxis; }
-    void set(float radius, int sectorCount, int stackCount, bool smooth = true, int up = 3);
-    void setRadius(float radius);
-    void setSectorCount(int sectorCount);
-    void setStackCount(int stackCount);
-    void setSmooth(bool smooth);
-    void setUpAxis(int up);
-    void reverseNormals();
+            unsigned int vbo, ebo;
+            glGenBuffers(1, &vbo);
+            glGenBuffers(1, &ebo);
 
-    // for vertex data
-    unsigned int getVertexCount() const { return (unsigned int)vertices.size() / 3; }
-    unsigned int getNormalCount() const { return (unsigned int)normals.size() / 3; }
-    unsigned int getTexCoordCount() const { return (unsigned int)texCoords.size() / 2; }
-    unsigned int getIndexCount() const { return (unsigned int)indices.size(); }
-    unsigned int getLineIndexCount() const { return (unsigned int)lineIndices.size(); }
-    unsigned int getTriangleCount() const { return getIndexCount() / 3; }
-    unsigned int getVertexSize() const { return (unsigned int)vertices.size() * sizeof(float); }
-    unsigned int getNormalSize() const { return (unsigned int)normals.size() * sizeof(float); }
-    unsigned int getTexCoordSize() const { return (unsigned int)texCoords.size() * sizeof(float); }
-    unsigned int getIndexSize() const { return (unsigned int)indices.size() * sizeof(unsigned int); }
-    unsigned int getLineIndexSize() const { return (unsigned int)lineIndices.size() * sizeof(unsigned int); }
-    const float* getVertices() const { return vertices.data(); }
-    const float* getNormals() const { return normals.data(); }
-    const float* getTexCoords() const { return texCoords.data(); }
-    const unsigned int* getIndices() const { return indices.data(); }
-    const unsigned int* getLineIndices() const { return lineIndices.data(); }
+            std::vector<glm::vec3> positions;
+            std::vector<glm::vec2> uv;
+            std::vector<glm::vec3> normals;
+            std::vector<unsigned int> indices;
 
-    // for interleaved vertices: V/N/T
-    unsigned int getInterleavedVertexCount() const { return getVertexCount(); }    // # of vertices
-    unsigned int getInterleavedVertexSize() const { return (unsigned int)interleavedVertices.size() * sizeof(float); }    // # of bytes
-    int getInterleavedStride() const { return interleavedStride; }   // should be 32 bytes
-    const float* getInterleavedVertices() const { return interleavedVertices.data(); }
+            const unsigned int X_SEGMENTS = 15;
+            const unsigned int Y_SEGMENTS = 15;
+            const float PI = 3.14159265359f;
+            for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+            {
+                for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
+                {
+                    float xSegment = (float)x / (float)X_SEGMENTS;
+                    float ySegment = (float)y / (float)Y_SEGMENTS;
+                    float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                    float yPos = std::cos(ySegment * PI);
+                    float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 
-    // draw in VertexArray mode
-    void draw() const;                                  // draw surface
-    void drawLines(const float lineColor[4]) const;     // draw lines only
-    void drawWithLines(const float lineColor[4]) const; // draw surface and lines
+                    positions.push_back(glm::vec3(xPos, yPos, zPos));
+                    uv.push_back(glm::vec2(xSegment, ySegment));
+                    normals.push_back(glm::vec3(xPos, yPos, zPos));
+                }
+            }
 
-    // debug
-    void printSelf() const;
+            bool oddRow = false;
+            for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
+            {
+                if (!oddRow) // even rows: y == 0, y == 2; and so on
+                {
+                    for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+                    {
+                        indices.push_back(y * (X_SEGMENTS + 1) + x);
+                        indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+                    }
+                }
+                else
+                {
+                    for (int x = X_SEGMENTS; x >= 0; --x)
+                    {
+                        indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+                        indices.push_back(y * (X_SEGMENTS + 1) + x);
+                    }
+                }
+                oddRow = !oddRow;
+            }
+            indexCount = static_cast<unsigned int>(indices.size());
 
-protected:
+            std::vector<float> data;
+            for (unsigned int i = 0; i < positions.size(); ++i)
+            {
+                data.push_back(positions[i].x);
+                data.push_back(positions[i].y);
+                data.push_back(positions[i].z);
+                if (normals.size() > 0)
+                {
+                    data.push_back(normals[i].x);
+                    data.push_back(normals[i].y);
+                    data.push_back(normals[i].z);
+                }
+                if (uv.size() > 0)
+                {
+                    data.push_back(uv[i].x);
+                    data.push_back(uv[i].y);
+                }
+            }
+            glBindVertexArray(sphereVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+            unsigned int stride = (3 + 2 + 3) * sizeof(float);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 
-private:
-    // member functions
-    void buildVerticesSmooth();
-    void buildVerticesFlat();
-    void buildInterleavedVertices();
-    void changeUpAxis(int from, int to);
-    void clearArrays();
-    void addVertex(float x, float y, float z);
-    void addNormal(float x, float y, float z);
-    void addTexCoord(float s, float t);
-    void addIndices(unsigned int i1, unsigned int i2, unsigned int i3);
-    std::vector<float> computeFaceNormal(float x1, float y1, float z1,
-        float x2, float y2, float z2,
-        float x3, float y3, float z3);
+        }
+        
+        // load image, create texture and generate mipmaps
+        int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+        unsigned char* data = stbi_load("src/img/redhotflames.jpg", &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            std::cout << "Failed to load texture" << std::endl;
+        }
+        stbi_image_free(data);
 
-    // memeber vars
-    float radius;
-    int sectorCount;                        // longitude, # of slices
-    int stackCount;                         // latitude, # of stacks
-    bool smooth;
-    int upAxis;                             // +X=1, +Y=2, +z=3 (default)
-    std::vector<float> vertices;
-    std::vector<float> normals;
-    std::vector<float> texCoords;
-    std::vector<unsigned int> indices;
-    std::vector<unsigned int> lineIndices;
+        shader.use();
+        shader.setInt("texture1", 0);
+	}
 
-    // interleaved
-    std::vector<float> interleavedVertices;
-    int interleavedStride;                  // # of bytes to hop to the next vertex (should be 32 bytes)
+	void SetupThreeBody()
+	{
 
+	}
+
+public:
+	Physics physics;
+
+	Shader shader{ "src/shaders/GLSL/camera.vs", "src/shaders/GLSL/camera.fs" };
+    unsigned int sphereVAO = 0;
+    unsigned int indexCount;
+
+    unsigned int texture1;
+    unsigned int texture2;
+
+    std::vector<glm::vec3> SpherePositions
+    {
+        glm::vec3(0.0f, 0.0f, 0.0f)
+    };
 };
-
-#endif
-

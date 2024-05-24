@@ -1,7 +1,7 @@
 #include "Window.h"
 
 Window::Window()
-	:
+    :
     width{ 1920 },
     height{ 1080 },
     z_near{ 0.1f },
