@@ -25,11 +25,12 @@ public:
 private:
 	void RenderSphere();
 	void RenderThreeBody();
-
+	bool CanToggleWireFrame();
 
 private:
 	Window& window;
 	bool frame_state = 0; // 0 -> WireFrameOff. 1 -> WireFrameOn
+	double last_toggle_time = 0.0;
 
 	Camera& camera = scenemgr.ctrlmgr.camera;
 	Sphere& sphere = scenemgr.objmgr.sphere;

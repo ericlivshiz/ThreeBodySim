@@ -36,19 +36,31 @@ void Renderer::PostRender()
 
 void Renderer::ToggleWireFrame()
 {
-	// if wireframes off on call, turn on. vice versa.
+	if (CanToggleWireFrame()) {
+		// Toggle wireframe state
+		if (!frame_state) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			frame_state = true;
+		}
+		else {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			frame_state = false;
+		}
 
-	if (!frame_state)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		frame_state = true;
+		// Update last toggle time
+		last_toggle_time = glfwGetTime();
 	}
+}
 
-	else if (frame_state)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		frame_state = false;
-	}
+bool Renderer::CanToggleWireFrame() {
+	// Get current time
+	double current_time = glfwGetTime();
+
+	// Calculate time difference since last toggle
+	double elapsed_time = current_time - last_toggle_time;
+
+	// Check if enough time has passed (500 milliseconds)
+	return elapsed_time >= 0.5; // 0.5 seconds = 500 milliseconds
 }
 
 void Renderer::RenderSphere()

@@ -11,7 +11,7 @@
 class Sphere
 {
 public:
-    void Setup()
+    void Setup(const char* texturePath)
     {
         if (sphereVAO == 0)
         {
@@ -113,7 +113,7 @@ public:
         // load image, create texture and generate mipmaps
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-        unsigned char* data = stbi_load("src/img/redhotflames.jpg", &width, &height, &nrChannels, 0);
+        unsigned char* data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
         if (data)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -129,6 +129,11 @@ public:
         shader.setInt("texture1", 0);
     }
 public:
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 mass;
+
+public:
     Physics physics;
 
     Shader shader{ "src/shaders/GLSL/camera.vs", "src/shaders/GLSL/camera.fs" };
@@ -138,6 +143,6 @@ public:
     unsigned int texture1;
     unsigned int texture2;
 
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+    
 
 };

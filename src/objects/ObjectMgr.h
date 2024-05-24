@@ -14,15 +14,22 @@ public:
 		ThreeBody.push_back(sphere2);
 		ThreeBody.push_back(sphere3);
 
-		for (auto& body : ThreeBody)
+		for (int i = 0; i < ThreeBody.size(); i++)
 		{
-			body.Setup();
+			ThreeBody[i].Setup(texturePaths[i]);
 		}
 	}
 
 public:
 
 	std::vector<Sphere> ThreeBody;
+
+	std::vector<const char* > texturePaths =
+	{
+		"src/img/blueplasma.jpg",
+		"src/img/redhotflames.jpg",
+		"src/img/solarTexture.jpg"
+	};
 
 	Sphere sphere;
 	Sphere sphere2;
