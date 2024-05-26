@@ -119,8 +119,9 @@ void Renderer::RenderSphere()
 
 void Renderer::RenderThreeBody()
 {
-	for (auto& body : ThreeBody)
+	for (int i = 0; i < gui.planet_count; i++)
 	{
+		auto& body = scenemgr.objmgr.ThreeBody[i];
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, body.texture1);
 

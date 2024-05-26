@@ -19,7 +19,7 @@ Window::Window()
 
     // glfw window creation
     // --------------------
-    window = glfwCreateWindow(width, height, "IDK YET", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Planet Stuff", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;

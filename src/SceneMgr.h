@@ -2,7 +2,6 @@
 
 #include "objects/ObjectMgr.h"
 #include "controls/ControlMgr.h"
-#include "GUI.h"
 
 class SceneMgr
 {

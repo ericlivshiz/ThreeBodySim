@@ -11,7 +11,8 @@
 class GUI
 {
 public:
-	GUI(GLFWwindow* window);
+	GUI(GLFWwindow* window, SceneMgr& scenemgr);
+
 	void Setup();
 	void Render();
 	void Start();
@@ -20,8 +21,12 @@ public:
 	// ui components
 public:
 	void windowHeader();
+	void planetsHeader();
+	void settingsHeader();
 	void simulationHeader();
 	void showPerformance();
+
+	int planet_count = 3;
 
 private:
 	static void glfw_error_callback(int error, const char* description);
@@ -33,4 +38,9 @@ private:
 	ImGuiIO io;
 
 	GLFWwindow* window;
+	SceneMgr& scenemgr;
+
+	std::vector<Sphere>& spheres = scenemgr.objmgr.ThreeBody;
+
+	std::vector<glm::vec3> startPositions;
 };
