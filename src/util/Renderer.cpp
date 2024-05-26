@@ -15,6 +15,8 @@ void Renderer::PreRender()
 
 void Renderer::Render()
 {
+	gui.Render();
+
 	Sphere& sphere = scenemgr.objmgr.sphere;
 
 	if (SHOULD_LOAD_SPHERE)
@@ -63,6 +65,38 @@ bool Renderer::CanToggleWireFrame() {
 	return elapsed_time >= 0.5; // 0.5 seconds = 500 milliseconds
 }
 
+void Renderer::ToggleMouseMode()
+{
+	if (CanToggleMouse())
+	{
+		if (mouse_visible)
+		{
+			glfwSetInputMode(window.Get_Window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			mouse_visible = false;
+		}
+
+		else if (!mouse_visible)
+		{
+			glfwSetInputMode(window.Get_Window(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			mouse_visible = true;
+		}
+
+		last_toggle_time_m = glfwGetTime();
+	}
+}
+
+bool Renderer::CanToggleMouse()
+{
+	// Get current time
+	double current_time = glfwGetTime();
+
+	// Calculate time difference since last toggle
+	double elapsed_time = current_time - last_toggle_time_m;
+
+	// Check if enough time has passed (500 milliseconds)
+	return elapsed_time >= 0.5; // 0.5 seconds = 500 milliseconds
+}
+
 void Renderer::RenderSphere()
 {
 	glActiveTexture(GL_TEXTURE0);
@@ -86,8 +120,6 @@ void Renderer::RenderSphere()
 
 void Renderer::RenderThreeBody()
 {
-	float xPos = -10.0f;
-
 	for (auto& body : ThreeBody)
 	{
 		glActiveTexture(GL_TEXTURE0);
@@ -105,13 +137,9 @@ void Renderer::RenderThreeBody()
 		glm::mat4 model = glm::mat4(1.0f);
 
 		// Update the x-coordinate of the model matrix
-		body.position.x = xPos;
 		model = glm::translate(model, glm::vec3(body.position));
 
 		body.shader.setMat4("model", model);
-
-		// Increment x-coordinate for next iteration
-		xPos += 10.0f;
 
 		glDrawElements(GL_TRIANGLE_STRIP, body.indexCount, GL_UNSIGNED_INT, 0);
 	}

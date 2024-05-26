@@ -2,8 +2,35 @@
 
 #include "SceneMgr.h"
 
+#include "../dependencies/imgui/imgui.h"
+#include "../dependencies/imgui/imgui_impl_glfw.h"
+#include "../dependencies/imgui/imgui_impl_opengl3.h"
+
+#include "util/Window.h"
+
 class GUI
 {
 public:
+	GUI(GLFWwindow* window);
+	void Setup();
+	void Render();
+	void Start();
+	void End();
+
+	// ui components
+public:
+	void windowHeader();
+	void simulationHeader();
+
+private:
+	static void glfw_error_callback(int error, const char* description);
+	void SetContext();
+	void SetBackends();
+
+	const char* glsl_version = "#version 130";
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	ImGuiIO io;
+
+	GLFWwindow* window;
 
 };

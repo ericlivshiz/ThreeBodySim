@@ -14,9 +14,14 @@ public:
 		ThreeBody.push_back(sphere2);
 		ThreeBody.push_back(sphere3);
 
+		float xPos = -10.0f;
+
 		for (int i = 0; i < ThreeBody.size(); i++)
 		{
 			ThreeBody[i].Setup(texturePaths[i]);
+			ThreeBody[i].position.x = xPos;
+
+			xPos += 10.0f;
 		}
 	}
 

@@ -22,11 +22,11 @@ void Application::Stop()
 void Application::Setup()
 {
 	renderer.scenemgr.SetupScene();
+	renderer.gui.Setup();
 
 	glfwSetCursorPosCallback(window.Get_Window(), mouse_callback);
 	glfwSetScrollCallback(window.Get_Window(), scroll_callback);
 	glfwSetInputMode(window.Get_Window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 
 	AppLoop();
 }
@@ -59,6 +59,11 @@ void Application::Handle_Input()
 
 	// and a certain button lock time has passed..
 	if (keyboard.L_CTRL_PRESS)
+	{
+		renderer.ToggleMouseMode();
+	}
+
+	if (keyboard.L_SHIFT_PRESS)
 	{
 		renderer.ToggleWireFrame();
 	}
@@ -133,3 +138,4 @@ void Application::scroll_callback(GLFWwindow* window, double xoffset, double yof
 		camera.ProcessMouseScroll(static_cast<float>(yoffset));
 	}
 }
+

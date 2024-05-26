@@ -24,6 +24,7 @@ private:
 private:
 	static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+	
 
 	float lastX = window.Get_Width() / 2.0f;
 	float lastY = window.Get_Height() / 2.0f;
@@ -35,4 +36,5 @@ private:
 	Renderer renderer{window};
 
 	static Application* instance;
+
 };
