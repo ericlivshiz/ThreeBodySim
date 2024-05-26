@@ -4,7 +4,6 @@ GUI::GUI(GLFWwindow* window)
 	:
 	window{ window }
 {
-
 }
 
 void GUI::Setup()
@@ -34,6 +33,7 @@ void GUI::Render()
 
 	windowHeader();
 	simulationHeader();
+	showPerformance();
 
 	ImGui::End();
 
@@ -66,6 +66,15 @@ void GUI::simulationHeader()
 		ImGui::RadioButton("Stop", &simulation_settings, 2); // 2 -> stop sim
 		ImGui::RadioButton("Restart", &simulation_settings, 3); // 3 -> restart sim
 	}
+}
+
+void GUI::showPerformance()
+{
+	ImGui::Begin("Performance");
+	ImGui::Text("Frame time: %f ms", io.DeltaTime * 1000.0f);
+	float fps = 1 / io.DeltaTime;
+	ImGui::Text("FPS %f", fps);
+	ImGui::End();
 }
 
 void GUI::glfw_error_callback(int error, const char* description)

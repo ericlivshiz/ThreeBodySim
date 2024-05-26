@@ -47,8 +47,6 @@ void Application::AppLoop()
 
 void Application::Handle_Input()
 {
-	Keyboard& keyboard = renderer.scenemgr.ctrlmgr.keyboard;
-	Camera& camera = renderer.scenemgr.ctrlmgr.camera;
 
 	keyboard.ProcessKeyInput(window.Get_Window());
 
@@ -105,8 +103,6 @@ void Application::mouse_callback(GLFWwindow* window, double xposIn, double yposI
 {
 	if (instance)
 	{
-		Camera& camera = instance->renderer.scenemgr.ctrlmgr.camera;
-
 		float xpos = static_cast<float>(xposIn);
 		float ypos = static_cast<float>(yposIn);
 
@@ -123,7 +119,7 @@ void Application::mouse_callback(GLFWwindow* window, double xposIn, double yposI
 		instance->lastX = xpos;
 		instance->lastY = ypos;
 
-		camera.ProcessMouseMovement(xoffset, yoffset, true);
+		instance->camera.ProcessMouseMovement(xoffset, yoffset, true);
 	}
 }
 
@@ -133,9 +129,7 @@ void Application::scroll_callback(GLFWwindow* window, double xoffset, double yof
 {
 	if (instance)
 	{
-		Camera& camera = instance->renderer.scenemgr.ctrlmgr.camera;
-
-		camera.ProcessMouseScroll(static_cast<float>(yoffset));
+		instance->camera.ProcessMouseScroll(static_cast<float>(yoffset));
 	}
 }
 

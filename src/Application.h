@@ -37,4 +37,6 @@ private:
 
 	static Application* instance;
 
+	Keyboard& keyboard = renderer.scenemgr.ctrlmgr.keyboard;
+	Camera& camera = renderer.scenemgr.ctrlmgr.camera;
 };

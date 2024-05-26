@@ -21,6 +21,7 @@ public:
 public:
 	void windowHeader();
 	void simulationHeader();
+	void showPerformance();
 
 private:
 	static void glfw_error_callback(int error, const char* description);
@@ -32,5 +33,4 @@ private:
 	ImGuiIO io;
 
 	GLFWwindow* window;
-
 };

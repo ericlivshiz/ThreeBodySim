@@ -31,6 +31,7 @@ private:
 
 private:
 	Window& window;
+
 	bool frame_state = 0; // 0 -> WireFrameOff. 1 -> WireFrameOn
 	double last_toggle_time = 0.0;
 
@@ -42,5 +43,5 @@ private:
 	std::vector<Sphere>& ThreeBody = scenemgr.objmgr.ThreeBody;
 
 public:
-	GUI gui{ window.Get_Window() };
+	GUI gui{ window.Get_Window()};
 };

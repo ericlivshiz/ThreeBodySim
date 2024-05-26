@@ -4,7 +4,6 @@ Renderer::Renderer(Window& window)
 	:
 	window{ window }
 {
-
 }
 
 void Renderer::PreRender()
