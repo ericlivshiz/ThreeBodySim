@@ -38,8 +38,9 @@ void GUI::Render()
 
 	windowHeader();
 	planetsHeader();
-	settingsHeader();
+	objSettingsHeader();
 	simulationHeader();
+	settingsHeader();
 	showPerformance();
 
 	ImGui::End();
@@ -78,9 +79,9 @@ void GUI::planetsHeader()
 	this->planet_count = planet_count;
 }
 
-void GUI::settingsHeader()
+void GUI::objSettingsHeader()
 {
-	if (ImGui::CollapsingHeader("Settings"))
+	if (ImGui::CollapsingHeader("Object Settings"))
 	{
 		static int testing;
 
@@ -93,6 +94,7 @@ void GUI::settingsHeader()
 		if (testing != NULL)
 		{
 			glm::vec3& pos = spheres[testing - 1].position;
+			glm::vec3& scale = spheres[testing - 1].scale;
 
 			ImGui::Begin("Sphere Editor");
 
@@ -101,6 +103,12 @@ void GUI::settingsHeader()
 			ImGui::SliderFloat("pos x", &pos.x, -10.0f, 10.0f);
 			ImGui::SliderFloat("pos y", &pos.y, -10.0f, 10.0f);
 			ImGui::SliderFloat("pos z", &pos.z, -10.0f, 10.0f);
+
+			ImGui::Text("Edit Size: ");
+
+			ImGui::SliderFloat("Size x", &scale.x, 1.0f, 10.0f);
+			ImGui::SliderFloat("Size y", &scale.y, 1.0f, 10.0f);
+			ImGui::SliderFloat("Size z", &scale.z, 1.0f, 10.0f);
 
 			ImGui::End();
 		}
@@ -118,6 +126,16 @@ void GUI::simulationHeader()
 		ImGui::RadioButton("Stop",    &simulation_settings, 2); // 2 -> stop sim
 		ImGui::RadioButton("Restart", &simulation_settings, 3); // 3 -> restart sim
 	}
+}
+
+void GUI::settingsHeader()
+{
+	float& movement_speed = scenemgr.ctrlmgr.camera.MovementSpeed;
+	float& mouse_speed = scenemgr.ctrlmgr.camera.MouseSensitivity;
+	ImGui::Text("Control Settings: ");
+
+	ImGui::SliderFloat("Movement Speed", &movement_speed, 1.0f, 5.0f);
+	ImGui::SliderFloat("Mouse Sensitivity", &mouse_speed, 1.0f, 5.0f);
 }
 
 void GUI::showPerformance()

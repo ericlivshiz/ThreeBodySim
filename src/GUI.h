@@ -22,6 +22,7 @@ public:
 public:
 	void windowHeader();
 	void planetsHeader();
+	void objSettingsHeader();
 	void settingsHeader();
 	void simulationHeader();
 	void showPerformance();

@@ -138,7 +138,7 @@ void Renderer::RenderThreeBody()
 
 		// Update the x-coordinate of the model matrix
 		model = glm::translate(model, glm::vec3(body.position));
-
+		model = glm::scale(model, body.scale);
 		body.shader.setMat4("model", model);
 
 		glDrawElements(GL_TRIANGLE_STRIP, body.indexCount, GL_UNSIGNED_INT, 0);
