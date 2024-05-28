@@ -28,6 +28,7 @@ public:
 	void showPerformance();
 
 	int planet_count = 3;
+	bool move_permission = false;
 
 private:
 	static void glfw_error_callback(int error, const char* description);
@@ -43,5 +44,6 @@ private:
 
 	std::vector<Sphere>& spheres = scenemgr.objmgr.ThreeBody;
 
-	std::vector<glm::vec3> startPositions;
+	std::vector<glm::vec3> restartPositions;
+	glm::vec3 tempVelocity;
 };

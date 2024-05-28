@@ -128,14 +128,18 @@ public:
         shader.use();
         shader.setInt("texture1", 0);
     }
+
 public:
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 scale = glm::vec3(1.0f);
-    glm::vec3 mass;
-
-public:
+    float mass;
     Physics physics;
+
+    void Move(float& deltaTime)
+    {
+        physics.testMove(position, velocity, deltaTime);
+    }
 
     Shader shader{ "src/shaders/GLSL/camera.vs", "src/shaders/GLSL/camera.fs" };
     unsigned int sphereVAO = 0;

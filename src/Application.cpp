@@ -89,7 +89,18 @@ void Application::Handle_Input()
 
 void Application::Update()
 {
+	bool& movePermission = renderer.gui.move_permission;
 
+	if (movePermission)
+	{
+		std::vector<Sphere>& ThreeBody = renderer.scenemgr.objmgr.ThreeBody;
+
+		for (auto& body : ThreeBody)
+		{
+			body.Move(deltaTime);
+		}
+	}
+	
 }
 
 void Application::Display()

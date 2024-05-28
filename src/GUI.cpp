@@ -12,10 +12,6 @@ void GUI::Setup()
 	glfwSetErrorCallback(glfw_error_callback);
 	SetContext();
 	SetBackends();
-
-	startPositions.push_back(spheres[0].position);
-	startPositions.push_back(spheres[1].position);
-	startPositions.push_back(spheres[2].position);
 }
 
 void GUI::Start()
@@ -94,7 +90,9 @@ void GUI::objSettingsHeader()
 		if (testing != NULL)
 		{
 			glm::vec3& pos = spheres[testing - 1].position;
+			glm::vec3& vel = spheres[testing - 1].velocity;
 			glm::vec3& scale = spheres[testing - 1].scale;
+			float& mass = spheres[testing - 1].mass;
 
 			ImGui::Begin("Sphere Editor");
 
@@ -102,7 +100,17 @@ void GUI::objSettingsHeader()
 
 			ImGui::SliderFloat("pos x", &pos.x, -10.0f, 10.0f);
 			ImGui::SliderFloat("pos y", &pos.y, -10.0f, 10.0f);
-			ImGui::SliderFloat("pos z", &pos.z, -10.0f, 10.0f);
+			ImGui::SliderFloat("pos z", &pos.z, -10.0f, 10.0f); 
+
+			ImGui::InputFloat3("pos", &pos.x);
+
+			ImGui::Text("Edit Velocity: (dev test)");
+			ImGui::SliderFloat("vel x", &vel.x, -10.0f, 10.0f);
+			ImGui::SliderFloat("vel y", &vel.y, -10.0f, 10.0f);
+			ImGui::SliderFloat("vel z", &vel.z, -10.0f, 10.0f);
+
+			ImGui::Text("Edit Mass: ");
+			ImGui::InputFloat("mass", &mass);
 
 			ImGui::Text("Edit Size: ");
 
@@ -120,11 +128,33 @@ void GUI::simulationHeader()
 	if (ImGui::CollapsingHeader("Simulation"))
 	{
 		static int simulation_settings;
-		ImGui::Text("Simualtion Settings");
+		ImGui::Text("Simulation Settings");
 
 		ImGui::RadioButton("Start",   &simulation_settings, 1); // 1 -> start sim
 		ImGui::RadioButton("Stop",    &simulation_settings, 2); // 2 -> stop sim
 		ImGui::RadioButton("Restart", &simulation_settings, 3); // 3 -> restart sim
+
+		if (simulation_settings == 1)
+		{
+			// save positions before moving and load them up on restart
+			restartPositions.push_back(spheres[0].position);
+			restartPositions.push_back(spheres[1].position);
+			restartPositions.push_back(spheres[2].position);
+			move_permission = true;
+		}
+
+		if (simulation_settings == 2)
+		{
+			move_permission = false;
+		}
+
+		if (simulation_settings == 3)
+		{
+			spheres[0].position = restartPositions[0];
+			spheres[1].position = restartPositions[1];
+			spheres[2].position = restartPositions[2];
+		}
+
 	}
 }
 
@@ -134,7 +164,7 @@ void GUI::settingsHeader()
 	float& mouse_speed = scenemgr.ctrlmgr.camera.MouseSensitivity;
 	ImGui::Text("Control Settings: ");
 
-	ImGui::SliderFloat("Movement Speed", &movement_speed, 1.0f, 5.0f);
+	ImGui::SliderFloat("Movement Speed", &movement_speed, 1.0f, 10.0f);
 	ImGui::SliderFloat("Mouse Sensitivity", &mouse_speed, 1.0f, 5.0f);
 }
 
