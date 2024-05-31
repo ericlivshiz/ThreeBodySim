@@ -8,14 +8,13 @@ Renderer::Renderer(Window& window)
 
 void Renderer::PreRender()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	ImVec4& clear_color = gui.clear_color;
+	glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::Render()
 {
-	gui.Render();
-
 	Sphere& sphere = scenemgr.objmgr.sphere;
 
 	if (SHOULD_LOAD_SPHERE)
@@ -27,6 +26,15 @@ void Renderer::Render()
 	{
 		RenderThreeBody();
 	}
+
+	if (gui.use_skybox)
+	{
+		RenderCubeMap();
+	}
+
+	glDisable(GL_DEPTH_TEST);
+	gui.Render();
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::PostRender()
@@ -127,7 +135,7 @@ void Renderer::RenderThreeBody()
 
 		body.shader.use();
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)window.Get_AspectRatio(), 0.1f, 500.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)window.Get_AspectRatio(), 0.1f, 1000.0f);
 		body.shader.setMat4("projection", projection);
 
 		glm::mat4 view = camera.GetViewMatrix();
@@ -142,5 +150,41 @@ void Renderer::RenderThreeBody()
 		body.shader.setMat4("model", model);
 
 		glDrawElements(GL_TRIANGLE_STRIP, body.indexCount, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
 	}
+}
+
+void Renderer::RenderCubeMap()
+{
+	glDepthFunc(GL_LEQUAL);
+	Skybox& skybox = scenemgr.objmgr.skybox;
+
+	GLint polyMode;
+	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
+
+	bool wireFrameMode = false;
+
+	if (polyMode == GL_LINE)
+	{
+		wireFrameMode = true;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+	skybox.skyboxShader.use();
+
+	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+	skybox.skyboxShader.setMat4("view", view);
+	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)window.Get_AspectRatio(), 0.1f, 1000.0f);
+	skybox.skyboxShader.setMat4("projection", projection);
+
+	glBindVertexArray(skybox.skyboxVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.cubemapTexture);
+
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	glDepthFunc(GL_LESS);
+
+	glPolygonMode(GL_FRONT_AND_BACK, polyMode);
 }

@@ -9,6 +9,8 @@ public:
 	void SetupScene()
 	{
 		objmgr.SetupObjects();
+		objmgr.skybox.Create_Cubemap();
+
 	}
 
 public:

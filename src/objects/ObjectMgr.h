@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Sphere.h"
+#include "Skybox.h"
 
 #define SHOULD_LOAD_SPHERE     0
 #define SHOULD_LOAD_THREE_BODY 1
@@ -33,10 +34,14 @@ public:
 	{
 		"src/img/blueplasma.jpg",
 		"src/img/redhotflames.jpg",
-		"src/img/solarTexture.jpg"
+		"src/img/starrynighttexture.jpg"
 	};
 
 	Sphere sphere;
 	Sphere sphere2;
 	Sphere sphere3;
+
+	// since a skybox is a cube, it gets instantiated here, but the scene mgr deals with it.
+	Skybox skybox;
+	
 };

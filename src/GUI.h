@@ -29,6 +29,10 @@ public:
 
 	int planet_count = 3;
 	bool move_permission = false;
+	bool start_two_body = false;
+	bool use_skybox = false;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 
 private:
 	static void glfw_error_callback(int error, const char* description);
@@ -36,7 +40,6 @@ private:
 	void SetBackends();
 
 	const char* glsl_version = "#version 130";
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	ImGuiIO io;
 
 	GLFWwindow* window;

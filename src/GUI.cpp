@@ -42,11 +42,6 @@ void GUI::Render()
 	ImGui::End();
 
 	ImGui::Render();
-	int display_w, display_h;
-	glfwGetFramebufferSize(window, &display_w, &display_h);
-	glViewport(0, 0, display_w, display_h);
-	glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-	glClear(GL_COLOR_BUFFER_BIT);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
@@ -56,6 +51,7 @@ void GUI::windowHeader()
 	{
 		ImGui::Text("Window Background Color");
 		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+		ImGui::Checkbox("skybox", &use_skybox);
 	}
 }
 
@@ -104,10 +100,12 @@ void GUI::objSettingsHeader()
 
 			ImGui::InputFloat3("pos", &pos.x);
 
-			ImGui::Text("Edit Velocity: (dev test)");
+			ImGui::Text("Edit Velocity: ");
 			ImGui::SliderFloat("vel x", &vel.x, -10.0f, 10.0f);
 			ImGui::SliderFloat("vel y", &vel.y, -10.0f, 10.0f);
 			ImGui::SliderFloat("vel z", &vel.z, -10.0f, 10.0f);
+
+			ImGui::InputFloat3("vel", &vel.x);
 
 			ImGui::Text("Edit Mass: ");
 			ImGui::InputFloat("mass", &mass);
@@ -130,9 +128,11 @@ void GUI::simulationHeader()
 		static int simulation_settings;
 		ImGui::Text("Simulation Settings");
 
-		ImGui::RadioButton("Start",   &simulation_settings, 1); // 1 -> start sim
+		ImGui::RadioButton("Start Custom",   &simulation_settings, 1); // 1 -> start sim
 		ImGui::RadioButton("Stop",    &simulation_settings, 2); // 2 -> stop sim
 		ImGui::RadioButton("Restart", &simulation_settings, 3); // 3 -> restart sim
+		if (planet_count == 2)
+			ImGui::Checkbox("Start Two Body Sim", &start_two_body);
 
 		if (simulation_settings == 1)
 		{

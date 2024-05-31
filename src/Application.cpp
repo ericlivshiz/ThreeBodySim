@@ -90,17 +90,36 @@ void Application::Handle_Input()
 void Application::Update()
 {
 	bool& movePermission = renderer.gui.move_permission;
+	bool& startTwoBody = renderer.gui.start_two_body;
+	std::vector<Sphere>& ThreeBody = renderer.scenemgr.objmgr.ThreeBody;
+
+	if (startTwoBody)
+	{
+		Physics physics;
+		glm::vec3& p1 = ThreeBody[0].position;
+		glm::vec3& p2 = ThreeBody[1].position;
+		float& m1 = ThreeBody[0].mass;
+		float& m2 = ThreeBody[1].mass;
+
+		glm::vec3 forceOn1 = physics.computeGForce(p1, p2, m1, m2);
+		glm::vec3 forceOn2 = physics.computeGForce(p2, p1, m2, m1);
+
+		float scaledDt = 300;
+		ThreeBody[0].velocity += ((forceOn1 / m1) * deltaTime) / scaledDt;
+		ThreeBody[1].velocity += ((forceOn2 / m2) * deltaTime) / scaledDt;
+
+		ThreeBody[0].Move(deltaTime);
+		ThreeBody[1].Move(deltaTime);
+	}
 
 	if (movePermission)
 	{
-		std::vector<Sphere>& ThreeBody = renderer.scenemgr.objmgr.ThreeBody;
 
 		for (auto& body : ThreeBody)
 		{
 			body.Move(deltaTime);
 		}
 	}
-	
 }
 
 void Application::Display()

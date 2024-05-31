@@ -23,6 +23,7 @@ public:
 private:
 	void RenderSphere();
 	void RenderThreeBody();
+	void RenderCubeMap();
 	bool CanToggleWireFrame();
 	bool CanToggleMouse();
 

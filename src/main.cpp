@@ -1,8 +1,9 @@
 #include "Application.h"
 
 // TODO:
-// BE ABLE TO GET A BASIC TEST SIMULATION TO RUN (START, STOP, RESTART)
-// IMPLEMENT GRAVITATIONAL FORCE PHYSICS (in phyics class)
+// I want to be able to have skybox render even on toggle wireframe mode
+// Draw a point at the position of sphere moving  (trail)
+// physics
 
 int main()
 {
