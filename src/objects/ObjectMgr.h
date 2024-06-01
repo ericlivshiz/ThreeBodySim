@@ -31,7 +31,7 @@ public:
 
 	std::vector<const char* > texturePaths =
 	{
-		"src/img/blueplasma.jpg",
+		"src/img/solarTexture.jpg",
 		"src/img/redhotflames.jpg",
 		"src/img/starrynighttexture.jpg"
 	};
