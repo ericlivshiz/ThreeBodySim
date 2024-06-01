@@ -3,7 +3,6 @@
 #include "Sphere.h"
 #include "Skybox.h"
 
-#define SHOULD_LOAD_SPHERE     0
 #define SHOULD_LOAD_THREE_BODY 1
 
 class ObjectMgr

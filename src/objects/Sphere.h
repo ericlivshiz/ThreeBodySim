@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../util/Physics.h"
-
 #include "../shaders/Shader.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../../dependencies/stb_image.h"
+
+#include <vector>
 
 class Sphere
 {
@@ -134,13 +134,8 @@ public:
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 scale = glm::vec3(1.0f);
+    glm::vec3 feltForce = glm::vec3(0.0f, 0.0f, 0.0f);
     float mass;
-    Physics physics;
-
-    void Move(float& deltaTime)
-    {
-        physics.testMove(position, velocity, deltaTime);
-    }
 
     Shader shader{ "src/shaders/GLSL/camera.vs", "src/shaders/GLSL/camera.fs" };
     unsigned int sphereVAO = 0;

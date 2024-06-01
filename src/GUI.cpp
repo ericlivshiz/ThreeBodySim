@@ -131,15 +131,15 @@ void GUI::simulationHeader()
 		ImGui::RadioButton("Start Custom",   &simulation_settings, 1); // 1 -> start sim
 		ImGui::RadioButton("Stop",    &simulation_settings, 2); // 2 -> stop sim
 		ImGui::RadioButton("Restart", &simulation_settings, 3); // 3 -> restart sim
-		if (planet_count == 2)
-			ImGui::Checkbox("Start Two Body Sim", &start_two_body);
 
+		// save positions before moving and load them up on restart
 		if (simulation_settings == 1)
 		{
-			// save positions before moving and load them up on restart
-			restartPositions.push_back(spheres[0].position);
-			restartPositions.push_back(spheres[1].position);
-			restartPositions.push_back(spheres[2].position);
+			for (auto& body : spheres)
+			{
+				restartPositions.push_back(body.position);
+				restartVel.push_back(body.velocity);
+			}
 			move_permission = true;
 		}
 
@@ -150,11 +150,13 @@ void GUI::simulationHeader()
 
 		if (simulation_settings == 3)
 		{
-			spheres[0].position = restartPositions[0];
-			spheres[1].position = restartPositions[1];
-			spheres[2].position = restartPositions[2];
+			for (int i = 0; i < spheres.size(); i++)
+			{
+				spheres[i].position = restartPositions[i];
+				spheres[i].velocity = restartVel[i];
+				spheres[i].feltForce = glm::vec3(0.0f);
+			}
 		}
-
 	}
 }
 

@@ -8,12 +8,12 @@
 
 #include <vector>
 
-const float G = 9.8;
+const double G = 0.07;
 
 class Physics
 {
 public:
-	// use the velocity to change the position (simple test of movement)
-	void testMove(glm::vec3& position, glm::vec3& velocity, float& dt);
-	glm::vec3 computeGForce(glm::vec3& p1, glm::vec3& p2, float& m1, float& m2);
+	static void UpdatePosition(glm::vec3& position, glm::vec3 velocity, float dt);
+	static void UpdateVelocity(glm::vec3& velocity, glm::vec3 force, float mass, float dt);
+	static void CalculateGravitationalForce(glm::vec3& force, glm::vec3 p1, glm::vec3 p2, float m1, float m2);
 };

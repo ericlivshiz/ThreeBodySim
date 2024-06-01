@@ -17,11 +17,6 @@ void Renderer::Render()
 {
 	Sphere& sphere = scenemgr.objmgr.sphere;
 
-	if (SHOULD_LOAD_SPHERE)
-	{
-		RenderSphere();
-	}
-
 	if (SHOULD_LOAD_THREE_BODY)
 	{
 		RenderThreeBody();

@@ -29,7 +29,6 @@ public:
 
 	int planet_count = 3;
 	bool move_permission = false;
-	bool start_two_body = false;
 	bool use_skybox = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -48,5 +47,7 @@ private:
 	std::vector<Sphere>& spheres = scenemgr.objmgr.ThreeBody;
 
 	std::vector<glm::vec3> restartPositions;
+	std::vector<glm::vec3> restartVel;
+
 	glm::vec3 tempVelocity;
 };
